@@ -1,82 +1,152 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Readable Passphrase JS Demo</title>
-<script type='text/javascript'>
-//<![CDATA[
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-	// stub UI config
-	var ui = { RPdictionaryLoaded: false, RPattemptingLoad: false, entropyUsed: 0 }; 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	// called by body.onload
-	function loadRPDictionary () {
-		if( ui.RPdictionaryLoaded ) return true;
-		if( ui.RPattemptingLoad ) return false;
-		ui.RPattemptingLoad = true;
-		document.getElementById('passphrase').innerHTML = 'Loading Readable Passphrase Dictionary...';
-		var dictScript = document.createElement('script');
-		dictScript.type = 'text/javascript';
-		dictScript.src  = 'dict-readablepassphrase.js';
-		document.body.appendChild( dictScript );
-		// when the script loads, it will look for and call a function called 'ReadablePassphrase_Callback()'
-		return false;
-	}
+    <title>Generador de frase clave</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;700&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+        //<![CDATA[
 
-	// called after the readable passphrase dictionary has loaded (it's about 250k un-minified)
-	function ReadablePassphrase_Callback () {
-		document.getElementById('more_phrases_button').disabled = false;
+        // stub UI config
+        var ui = {
+            RPdictionaryLoaded: false,
+            RPattemptingLoad: false,
+            //entropyUsed: 0,
+        };
 
-		// DEMO: Replace the randomness function normally used by ReadablePassphrase with our own
-		// You would normally use this feature to replace the function with a better source of randomness, eg. mouse movements, random.org, etc..
-		ReadablePassphrase.randomness = function( multiplier ) { 
-			ui.entropyUsed++; // our replacement function still uses dumpster randomness, but we count & display how much we've used
-			return Math.random() * ( multiplier || 1 ); 
-		}
+        // called by body.onload
+        function loadRPDictionary() {
+            if (ui.RPdictionaryLoaded) return true;
+            if (ui.RPattemptingLoad) return false;
+            ui.RPattemptingLoad = true;
+            document.getElementById("passphrasebox").innerHTML =
+                "Cargando diccionario...";
+            var dictScript = document.createElement("script");
+            dictScript.type = "text/javascript";
+            dictScript.src = "dict-readablepassphrase.js";
+            document.body.appendChild(dictScript);
+            // when the script loads, it will look for and call a function called 'ReadablePassphrase_Callback()'
+            return false;
+        }
 
-		getMorePhrases();
-	}
-	
-	function getMorePhrases() {
-		var phrases = [];
+        // called after the readable passphrase dictionary has loaded (it's about 250k un-minified)
+        function ReadablePassphrase_Callback() {
+            document.getElementById("more_phrases_button").disabled = false;
 
-		// DEMO: get a list of available templates, then loop through them to create an example of each
-		ReadablePassphrase.templates().forEach(function( templateName ) {
-			var passPhrase = new ReadablePassphrase(templateName); 
-			// console.log( passPhrase ); // The returned passphrase object has dictionary information attached to words, name of the template actually used, etc..
-			phrases.push( templateName + ': ' + passPhrase ); // However, you probably just want its toString() output.
-		});
+            // DEMO: Replace the randomness function normally used by ReadablePassphrase with our own
+            // You would normally use this feature to replace the function with a better source of randomness, eg. mouse movements, random.org, etc..
+            // ReadablePassphrase.randomness = function(multiplier) {
+            //     ui.entropyUsed++; // our replacement function still uses dumpster randomness, but we count & display how much we've used
+            //     return Math.random() * (multiplier || 1);
+            // };
 
-		document.getElementById('passphrase').innerHTML = phrases.join("\n");
-		document.getElementById('entropy').innerHTML = ui.entropyUsed; // Fun fact: looping through available templates uses about 650 random numbers
-	}
-	
-// ]]> // end CDATA
-</script>
-<style type='text/css'>
-	body { font-family: sans-serif; }
-	div { margin-bottom: 1em; }
-	#passphrase { border: solid 1px #000; background-color: #DDD; padding: 0.2em; white-space: pre; }
-	#entropy { border: solid 1px #000; padding-left: 0.2em; padding-right: 0.2em; margin-right: 0.5em; }
-</style>
+            getMorePhrases();
+
+        }
+
+        function getMorePhrases() {
+            var phrases = [];
+            var allPhrases = [];
+
+            // DEMO: get a list of available templates, then loop through them to create an example of each
+            ReadablePassphrase.templates().forEach(function(templateName) {
+                var passPhrase = new ReadablePassphrase(templateName);
+                // console.log( passPhrase ); // The returned passphrase object has dictionary information attached to words, name of the template actually used, etc..
+                //phrases.push("<div class='templateName'>" + templateName + "</div>" + ": " + "<div class='passPhrase'>" + passPhrase + "</div>"); // However, you probably just want its toString() output.
+                phrases.push("<p class='passPhrase'>" + passPhrase + "</p>");
+                allPhrases.push("-" + passPhrase)
+                    //phrases.push(templateName + ": " + passPhrase);
+            });
+
+            document.getElementById("passphrasebox").innerHTML = phrases.join("\n");
+            //document.getElementById("entropy").innerHTML = ui.entropyUsed; // Fun fact: looping through available templates uses about 650 random numbers
+
+            const p = document.querySelectorAll("p");
+
+            for (var i = 0, len = p.length; i < len; i++) {
+                var largo = p[i].innerHTML.length
+                var random = Math.random() * 10;
+                var factor = random + (500 / largo) + 10;
+                p[i].style.fontSize = factor + "px";
+            }
+
+        }
+
+
+
+
+        // ]]> // end CDATA
+    </script>
+    <style type="text/css">
+        body {
+            font-family: 'Roboto Slab', serif;
+            background-color: #1f1f1f;
+        }
+        
+        div {
+            margin-bottom: 1em;
+        }
+        
+        h2 {
+            font-weight: 700;
+        }
+        
+        #passphrasebox {
+            border: solid 1px #000;
+            background-color: #739bd9;
+            padding: 0.2em;
+            /* white-space: pre; */
+            flex-wrap: wrap;
+            width: 100vw;
+        }
+        
+        .passPhrase {
+            font-size: 14px;
+            font-family: 'Roboto Slab', serif;
+            display: inline-block;
+            left: 100px;
+            border: 1px solid #1b0f44;
+            background-color: aliceblue;
+            border-radius: 10px;
+            margin: 10px;
+            padding: 5px;
+        }
+        
+        .templateName {
+            font-size: 10px;
+            display: inline;
+        }
+        
+        #more_phrases_button {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 800;
+            font-size: 26px;
+        }
+        
+        #entropy {
+            border: solid 1px #000;
+            padding-left: 0.2em;
+            padding-right: 0.2em;
+            margin-right: 0.5em;
+        }
+    </style>
 </head>
-<body onload='loadRPDictionary();'>
-<h2>Readable Passphrase JS Demo</h2>
-<div id='passphrase_container'>
-	<div id='passphrase' style='white-space: pre;'></div>
-	<span style='font-weight: bold;'>Entropy used: </span><span id='entropy'>0</span>
-</div>
-<div id='stats_container' style='display: none;'>
-	<table id ='stats_table'>
-		<thead>
-			<tr><th rowspan='2'>Method</th><th colspan='3'>Entropy Used</th><th colspan='3'>Number of Words</th><th colspan='3'>Phrase Length</th></tr>
-			<tr><th>Min</th><th>Avg</th><th>Max</th><th>Min</th><th>Avg</th><th>Max</th><th>Min</th><th>Avg</th><th>Max</th></tr>
-		</thead>
-		<tbody id='stats'> </tbody>
-	</table>
-</div>
-<div>
-	<input id='more_phrases_button' type='button' onclick='getMorePhrases();' value='Generate More Phrases' disabled='disabled' />
-</div>
+
+<body onload="loadRPDictionary();">
+    <h2>Generador de frases clave</h2>
+    <div id="passphrase_container">
+        <div id="passphrasebox"></div>
+
+    </div>
+
+    <div>
+        <input id="more_phrases_button" type="button" onclick="getMorePhrases();" value="Manda" disabled="disabled" />
+    </div>
 </body>
+
 </html>

@@ -1,8 +1,11 @@
-# readablePassphraseJS
-Javascript implementation of Murray Grant's readable passphrase generator
+# readablePassphraseJS-ES
 
-Readable Passphrase Generator creates random english sentences.  They may be easier to remember
-than a long string of random letters & numbers, or 4 random words.
+Una adaptación al español de readablePassphraseJS por Steven Zeck, el cual a su vez es una implementación en Javascript del readable passphrase generator de Murray Grant.
+
+Este programa genera oraciones aleatorias en español que pueden funcionar mejor que palabras clave y ser más fáciles de recordar. 
+
+Este software está en fase alpha, todavía falta bastante pero ya se puede ver [aquí](http://mirrodriguezlombardo.com/passphrase/).
+
 
 ## About the generator & Licensing
 
@@ -14,7 +17,7 @@ than a long string of random letters & numbers, or 4 random words.
 * Javascript port created by Steven Zeck <saintly@innocent.com>
 * Port licensed under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0)
  
- 
+
 ## Basic usage
  
 Include the javascript library on your web page;
@@ -60,20 +63,19 @@ Currently allowed types: `noun, verb, conjunction, directSpeech`
 
 Noun and Verb have several modifiers to determine the final form of the word.
  
-### Noun:
-* subtype [choice: common, proper, nounFromAdjective] - form of the noun
-* article [choice: none, definite, indefinite, demonstrative, personalPronoun ] 
+### Sustantivo:
+* subtype [choice: common, proper]
+* article [choice: none, definite, indefinite ] 
 * adjective [boolean] - whether to include an adjective
-* preposition [boolean] - whether to include a preposition
-* number [boolean] - whether to add a number before the noun, eg "234 dogs"
+* position adjetivo [boolean] - si el adjetivo va después (true) o antes (false) del sustantivo
 * singular [boolean] - whether the noun is singular (plural if false)
 
-### Verb:
-* subtype [choice: present, past, future, continuous, continuousPast, perfect, subjunctive ]
+### Verbo:
+* subtype [choice: gerundio,futuro,presente,  pasadoImperfecto,pasadoPerfecto ]
 * adverb [boolean] - whether to include an adverb
 * interrogative [boolean] - whether to make the whole phrase interrogative
-* intransitive [choice: noNounClause, preposition] ** both choices can be 0
-	
+
+
 ### Modifiers	
 When a modifier (called a 'factor' in the code) is a 'choice', it is specified as an object
 with the choices as properties, and each property has a numeric weight value.  Example:
@@ -95,37 +97,6 @@ When a modifier is a boolean, it can be specified in two ways:
 1. as a 2-element array: [ trueWeight, falseWeight ], eg [ 1, 4 ] evaluates true 1 in 5 times
 1. as a boolean.  true is equivalent to [ 1, 0 ] and false is equivalent to [ 0, 1 ]
 
-	
-### Sample templates parts
-```javascript
-	// A simple transitive verb, with a slight chance of being interrogative
-	{ type: 'verb',
-	  subtype: { 
-		present: 10, past: 8, future: 8, 
-		continuous: 0, continuousPast: 0, 
-		perfect: 0, subjunctive: 0
-	  },
-	  adverb: false, interrogative: [ 1, 8 ],
-	  intransitive: { noNounClause: 0, preposition: 0 }
-	}
-	
-	// A common, singular noun
-	{ type: 'noun',
-	  subtype: { common: 1, proper: 0, nounFromAdjective: 0 },
-	  article: { none: 5, definite: 4, indefinite: 4, demonstrative: 0, personalPronoun: 2 },
-	  adjective: false, preposition: false, number: false, single: true
-	}
-	
-	// conjunctions and directSpeech take no other modifiers
-	{ type: 'conjunction' }
-	{ type: 'directSpeech' }
-```
-	
-To see an existing template, execute this in the console:
-```javascript
-	console.log( RPSentenceTemplates.byName('normal') ); 
-	// some other templates: strongRequired, insaneSpeech
-```	
 
 
 	
@@ -183,67 +154,9 @@ Example:
 One good public javascript randomness library is the Stanford Javascript Crypto Library	
 [SJCL](https://crypto.stanford.edu/sjcl/)
 
-
-
-## Mutators
-
-By default, phrases are all lowercase and do not contain punctuation, but might contain numbers if
-the template calls for them.  To make the phrase more secure, it would be a good idea to add 
-random capital letters and throw in some numbers.  This will make the phrase harder to remember,
-but a lot more secure.
-
-* Randomly capitalizing one entire word makes your password about 5x harder to crack
-* A single number added to the end of a random word makes your password about 50x harder to crack
-
-You can do this yourself after you choose your phrase; just think of a number or pick a word and
-make the modification when you use it.  However, this module can do this task for you as well.
-
-Pass a second parameter to ReadablePassphrase when creating the object:
-```javascript
-	var mutator = {
-		upper:   { type: 'WholeWord', count: 1 },
-		numbers: { type: 'EndOfWord', count: 2 }
-	};
-	var mutantPhrase = new ReadablePassphrase( 'random', mutator  );
-	console.log(mutantPhrase.toString()); // the seashell IS5 signalling9 a windpipe
-```	
-
-A mutator is an object with the properties seen above.  'upper' describes how to add uppecase
-letters, and 'numbers' describes how and where to add numbers.  'count' is the number of 
-modifications to make.  An unlimited number of numbers can be added, but 'upper' will not add
-extra words if its count is higher than the number of words.
-
-If count is 0, null or not specified, 'upper' will randomly choose the number of words to modify,
-and numbers will add 1-5 numbers.  The 'type' determines how/where the modification will be made.
-
-upper types:
-* StartOfWord  - the first letter of the word
-* WholeWord    - the entire word
-* Anywhere     - one random letter in the word
-* RunOfLetters - 2 or more letters next to each other in the word
-* random       - any of the above, chosen randomly
-* none         - no letters will be made uppercase
-
-numbers types: (these determine where a number will be added)
-* StartOfWord  - the beginning of a word (eg 5flower)
-* EndOfWord    - end of a word (flower3)
-* StartOrEndOfWord - either the start or end of the word (50/50 chance)
-* EndOfPhrase  - end of the sentence (the flowers grind a cat2)
-* Anywhere     - anywhere (flo2wer)
-* random       - same as 'anywhere'
-* none         - no numbers will be added
-	
-There are two predefined mutators:
-* 'standard' - 1 uppercase word + 2 numbers (added to the end of words)
-* 'random'   - completely random mutations (phrase will be hard to remember)
-	
-You can use the predefined mutators by passing their name as a string:
-```javascript
-	var mutantPhrase = new ReadablePassphrase( 'random', 'standard'  );
-	console.log(mutantPhrase.toString()); // the seashell IS5 signalling9 a windpipe
-```
-
 ## Entropy
+
+**TODO** - Implementar entropía en español
 
 For certain purposes, it is useful to know how much entropy (randomness) is in a
 template.  Entropy is expressed as bits, where each bit represents a 50/50 chance.
