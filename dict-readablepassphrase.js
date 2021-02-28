@@ -369,6 +369,15 @@ ReadablePassphrase.prototype.addNounPrelude = function(palabra, factors) {
     definiteOrIndefinite = factors.byName(
         isPlural ? "articuloPlural" : "articuloSingular"
     );
+
+    if (
+        factors.byName("preposition") &&
+        (!this.last() || !this.last().hasTypes("preposition"))
+    ) {
+        this.appendWord(RPWordList.prepositions.getRandomWord(this.usedWords));
+    }
+
+
     switch (definiteOrIndefinite) {
         case "none":
             break;
@@ -1071,7 +1080,8 @@ function RPSentenceTemplate(template) {
                         },
                         adjective: el[6],
                         adjectiveDespues: el[7],
-                        singular: el[8],
+                        preposition: el[8],
+                        singular: el[9],
                     };
                     break;
                 case "verb":
@@ -1262,10 +1272,10 @@ RPSentenceTemplate.templates = {
     // Shorthand to select a random template out of a set of similar ones
     random: [
         "normal",
-        "normal3",
-        "normalAnd",
+        // "normal3",
+        // "normalAnd",
         "tituloDeLibro",
-        "strongSpeech"
+        // "strongSpeech"
     ],
 
 
@@ -1275,7 +1285,7 @@ RPSentenceTemplate.templates = {
     // article [choice: none, definite, indefinite ] 
     // adjective [boolean] - whether to include an adjective
     // position adjetivo [boolean] - si el adjetivo va después (true) o antes (false) del sustantivo
-
+    // preposition[boolean] - whether to include a preposition
     // singular [boolean] - whether the noun is singular (plural if false)
 
     // Verbo:
@@ -1285,16 +1295,31 @@ RPSentenceTemplate.templates = {
 
     // actual templates
     tituloDeLibro: new RPSentenceTemplate([
-        ["noun", 1, 0, 5, 4, 1, true, true, [1, 1]],
+        ["noun", 1, 0, 5, 4, 1, true, true, false, [1, 1]],
         // ["verb", 1, 1, 1, 1, 1, [1, 1], false],
         // ["noun", 2, 1, 5, 1, 4, false, false, false],
     ]),
 
     normal: new RPSentenceTemplate([
-        ["noun", 1, 0, 5, 4, 1, [1, 1], true, [1, 1]],
+        ["noun", 1, 0, 5, 4, 1, [1, 1], true, false, [1, 1]],
         ["verb", 1, 1, 1, 1, 1, [1, 1], false],
-        ["noun", 2, 1, 5, 1, 4, false, false, false],
+        ["noun", 2, 1, 5, 1, 4, false, true, true, true],
     ]),
+
+    normal: new RPSentenceTemplate([
+        ["verb", 1, 1, 1, 1, 1, [1, 1], false],
+        ["noun", 1, 0, 5, 4, 1, [1, 1], true, false, [1, 1]],
+        ["noun", 2, 1, 5, 1, 4, false, true, [1, 1], true],
+    ]),
+
+    elbuayHizo: new RPSentenceTemplate([
+        ["noun", 1, 1, 5, 1, 2, [1, 2],
+            [1, 2], false, [1, 1]
+        ],
+        ["verb", 0, 1, 1, 1, 1, false, false],
+    ]),
+
+
     normal2: new RPSentenceTemplate([
         ["noun", 1, 1, 5, 3, 1, [2, 1], false, [2, 1]],
         ["verb", 1, 2, 1, 2, 1, [1, 2], true],
@@ -1316,10 +1341,10 @@ RPSentenceTemplate.templates = {
         ],
         ["noun", 1, 0, 0, 5, 4, false, true, true],
     ]),
+
     normalAnd: new RPSentenceTemplate([
         ["noun", 2, 1, 2, 5, 4, false, true, false],
         ["verb", 2, 8, 2, 6, 6, false, [1, 8]],
-        ["noun", 1, 0, 2, 5, 4, [1, 1], false, [1, 2]],
         "conjunction", ["noun", 1, 0, 1, 5, 4, true, true, false],
     ]),
 
@@ -4718,76 +4743,52 @@ RPWordList.properNouns = new RPWordList("properNoun", [
 
 ]);
 
-// RPWordList.prepositions = new RPWordList("preposition", [
-//     "about",
-//     "above",
-//     "across from",
-//     "according to",
-//     "after",
-//     "ahead of",
-//     "against",
-//     "alongside",
-//     "amidst",
-//     "amoung",
-//     "apart from",
-//     "around",
-//     "as per",
-//     "as far as",
-//     "as well as",
-//     "aside from",
-//     "because of",
-//     "before",
-//     "behind",
-//     "below",
-//     "beside",
-//     "between",
-//     "beyond",
-//     "but",
-//     "by",
-//     "by means of",
-//     "close to",
-//     "except",
-//     "except for",
-//     "far from",
-//     "followed by",
-//     "from",
-//     "given",
-//     "in",
-//     "in addition to",
-//     "in front of",
-//     "in place of",
-//     "in spite of",
-//     "inside",
-//     "into",
-//     "left of",
-//     "near",
-//     "next to",
-//     "on",
-//     "on account of",
-//     "on behalf of",
-//     "on top of",
-//     "onto",
-//     "out",
-//     "out of",
-//     "outside",
-//     "past",
-//     "plus",
-//     "prior to",
-//     "right of",
-//     "sans",
-//     "since",
-//     "thanks to",
-//     "to",
-//     "towards",
-//     "toward",
-//     "under",
-//     "until",
-//     "upon",
-//     "via",
-//     "with",
-//     "within",
-//     "without",
-// ]);
+RPWordList.prepositions = new RPWordList("preposition", [
+    "a",
+    "ante",
+    "bajo",
+    "cabe",
+    "con",
+    "contra",
+    "de",
+    "desde",
+    "durante",
+    "en ",
+    "entre",
+    "hacia",
+    "hasta",
+    "mediante",
+    "para",
+    "por",
+    "según",
+    "sin",
+    "so",
+    "sobre",
+    "tras",
+    "durante",
+    "mediante",
+    "vía",
+    "versus",
+    "a causa de",
+    "a falta de",
+    "con base en",
+    "a favor de",
+    "a costa de",
+    "en contra de",
+    "respecto a",
+    "acerca de",
+    "con motivo de",
+    "junto a",
+    "a razón de",
+    "frente a",
+    "en relación con",
+    "en torno a",
+    "debajo de",
+    "a través de",
+    "de modo que",
+    "de acuerdo a",
+    "por medio de",
+]);
 
 RPWordList.nouns = new RPWordListPlural("noun", [
     ["año", "M"],
