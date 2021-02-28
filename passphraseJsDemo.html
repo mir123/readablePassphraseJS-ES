@@ -9,6 +9,7 @@
     <title>Generador de frase clave</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;700&display=swap" rel="stylesheet">
+    <script src="geopattern.min.js"></script>
     <script type="text/javascript">
         //<![CDATA[
 
@@ -59,7 +60,7 @@
                 // console.log( passPhrase ); // The returned passphrase object has dictionary information attached to words, name of the template actually used, etc..
                 //phrases.push("<div class='templateName'>" + templateName + "</div>" + ": " + "<div class='passPhrase'>" + passPhrase + "</div>"); // However, you probably just want its toString() output.
                 phrases.push("<p class='passPhrase'>" + passPhrase + "</p>");
-                allPhrases.push("-" + passPhrase)
+                allPhrases.push(passPhrase)
                     //phrases.push(templateName + ": " + passPhrase);
             });
 
@@ -75,9 +76,15 @@
                 p[i].style.fontSize = factor + "px";
             }
 
+
+
+            var pattern = GeoPattern.generate(allPhrases[0].toString());
+
+            document.getElementById("passphrasebox").style.backgroundImage = pattern.toDataUrl();
+
+
+
         }
-
-
 
 
         // ]]> // end CDATA
