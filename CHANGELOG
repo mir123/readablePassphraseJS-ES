@@ -1,14 +1,7 @@
 Changelog:
 
-1.0.1:
-	add method: ReadablePassphrase.entropyOf( passphrase, mutator ) to get combined entropy
-	bugfix: sometimes an error was being thrown when no choices were possible, but this is normal
-1.0: 
-	entropy calculation
-	mutators
-	minor refactor: new function randomInt() replaces multiple occurrences of Math.floor( random() )
-	documentation added (readme.txt and object API reference in /reference)	
-	bugfix: speech + interrogative not inserting interrogative at correct place
-	bugfix: singular number '1' was never being added	
-0.9: dictionary & template compression [file size reduced from 600k to 200k]
-0.8: initial release
+1.0
+Versión inicial
+
+1.1 
+Función de entropia, entropyOf

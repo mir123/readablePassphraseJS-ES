@@ -59,7 +59,7 @@
                 var passPhrase = new ReadablePassphrase(templateName);
                 // console.log( passPhrase ); // The returned passphrase object has dictionary information attached to words, name of the template actually used, etc..
                 //phrases.push("<div class='templateName'>" + templateName + "</div>" + ": " + "<div class='passPhrase'>" + passPhrase + "</div>"); // However, you probably just want its toString() output.
-                phrases.push("<p class='passPhrase'>" + passPhrase + "</p>");
+                phrases.push(" <p class='passPhrase'>" + passPhrase + "</p>" + " ( " + Math.round(passPhrase.template.entropy()) + ")");
                 allPhrases.push(passPhrase)
                     //phrases.push(templateName + ": " + passPhrase);
             });
